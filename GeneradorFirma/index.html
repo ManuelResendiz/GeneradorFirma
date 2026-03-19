@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Firma con Plantilla de Imagen</title>
+</head>
+<body>
+  <h2>Generador de Firma Electrónica</h2>
+
+  <div>
+    <label>Nombre: <input type="text" id="nombre"></label><br><br>
+    <label>Puesto: <input type="text" id="puesto"></label><br><br>
+    <label>Correo: <input type="email" id="correo"></label><br><br>
+    <label>Teléfono: <input type="text" id="telefono"></label><br><br>
+    <label>Dirección: <input type="text" id="direccion"></label><br><br>
+    <button onclick="generarFirma()">Generar Firma</button>
+    <button onclick="descargarFirma()">Descargar Imagen</button>
+  </div>
+
+  <canvas id="canvas" width="600" height="350"></canvas>
+
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const plantilla = new Image();
+    plantilla.src = "Plantilla.png"; // Cambia esta ruta según dónde tengas tu imagen
+
+    function generarFirma() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(plantilla, 0, 0, canvas.width, canvas.height);
+
+      ctx.font = "bold 20px Arial";
+      ctx.fillStyle = "black";
+      ctx.fillText(document.getElementById("nombre").value, 100, 80);
+
+      ctx.font = "16px Arial";
+      ctx.fillText(document.getElementById("puesto").value, 100, 110);
+      ctx.fillText(document.getElementById("correo").value, 100, 140);
+      ctx.fillText(document.getElementById("telefono").value, 100, 170);
+      ctx.fillText(document.getElementById("direccion").value, 100, 200);
+    }
+
+    function descargarFirma() {
+      // Aseguramos que la firma esté dibujada
+      generarFirma();
+
+      // Convertimos el canvas en Blob y forzamos la descarga
+      canvas.toBlob(function(blob) {
+        const link = document.createElement("a");
+        link.download = "firma.png";
+        link.href = URL.createObjectURL(blob);
+        link.click();
+        // Liberar memoria
+        URL.revokeObjectURL(link.href);
+      }, "image/png");
+    }
+
+    plantilla.onload = () => {
+      ctx.drawImage(plantilla, 0, 0, canvas.width, canvas.height);
+    };
+
+    plantilla.onerror = () => {
+      ctx.fillStyle = "lightblue";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "black";
+      ctx.font = "20px Arial";
+      ctx.fillText("No se encontró Plantilla.png", 50, 150);
+    };
+  </script>
+</body>
+</html>
